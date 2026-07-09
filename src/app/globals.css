@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+:root {
+  --color-ink: #16130f;
+  --color-ink-soft: #2a241c;
+  --color-bone: #f5efe4;
+  --color-bone-soft: #ece2d0;
+  --color-sand: #e4d5bd;
+  --color-tan: #a97a4c;
+  --color-tan-dark: #8a6039;
+  --color-walnut: #4a3324;
+  --color-brass: #9c8552;
+  --color-line: rgba(22, 19, 15, 0.12);
+  --color-line-inverse: rgba(245, 239, 228, 0.18);
+}
+
+@theme inline {
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-bone: var(--color-bone);
+  --color-bone-soft: var(--color-bone-soft);
+  --color-sand: var(--color-sand);
+  --color-tan: var(--color-tan);
+  --color-tan-dark: var(--color-tan-dark);
+  --color-walnut: var(--color-walnut);
+  --color-brass: var(--color-brass);
+  --color-line: var(--color-line);
+  --color-line-inverse: var(--color-line-inverse);
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+}
+
+body {
+  background: var(--color-bone);
+  color: var(--color-ink);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+::selection {
+  background: var(--color-tan);
+  color: var(--color-bone);
+}
+
+/* subtle grain texture used across full-bleed panels for a "stark visuell" feel without photography */
+.grain {
+  position: relative;
+  isolation: isolate;
+}
+
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.text-balance {
+  text-wrap: balance;
+}
