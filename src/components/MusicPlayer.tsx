@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { withBasePath } from "@/lib/basePath";
 
 export function MusicPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -29,7 +30,7 @@ export function MusicPlayer() {
 
   return (
     <div className="flex items-center gap-2">
-      <audio ref={audioRef} src="/audio/ambient-loop.wav" loop preload="none" />
+      <audio ref={audioRef} src={withBasePath("/audio/ambient-loop.wav")} loop preload="none" />
       <button
         onClick={toggle}
         aria-pressed={playing}

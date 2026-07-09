@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/lib/format";
 import {
@@ -13,7 +14,12 @@ import {
 } from "@/lib/configurator";
 import { PreviewPanel } from "@/components/Configurator/PreviewPanel";
 
-export function ConfiguratorClient({ initialModelId }: { initialModelId?: string }) {
+export function ConfiguratorClient() {
+  const searchParams = useSearchParams();
+  const requestedModel = searchParams.get("modell");
+  const initialModelId = MODELS.some((m) => m.id === requestedModel)
+    ? requestedModel!
+    : undefined;
   const [modelId, setModelId] = useState(initialModelId ?? MODELS[0].id);
   const [leatherId, setLeatherId] = useState(LEATHERS[0].id);
   const [colorId, setColorId] = useState(COLORS[0].id);

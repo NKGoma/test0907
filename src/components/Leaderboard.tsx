@@ -3,47 +3,20 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { TexturePanel } from "@/components/TexturePanel";
+import { getVoteState, castVote, type VoteState } from "@/lib/votes";
 import type { Product } from "@/lib/types";
-
-type VoteState = {
-  votes: Record<string, number>;
-  votedFor: string | null;
-};
 
 export function Leaderboard({ candidates }: { candidates: Product[] }) {
   const [state, setState] = useState<VoteState | null>(null);
-  const [pending, setPending] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/vote")
-      .then((res) => res.json())
-      .then(setState)
-      .catch(() => setError("Die Ergebnisse konnten nicht geladen werden."));
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time hydration from localStorage on mount
+    setState(getVoteState());
   }, []);
 
-  const vote = async (slug: string) => {
-    if (state?.votedFor || pending) return;
-    setPending(slug);
-    setError(null);
-    try {
-      const res = await fetch("/api/vote", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bagId: slug }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        if (data.votedFor) setState(data);
-        else setError("Ihre Stimme konnte nicht gezählt werden.");
-        return;
-      }
-      setState(data);
-    } catch {
-      setError("Ihre Stimme konnte nicht gezählt werden.");
-    } finally {
-      setPending(null);
-    }
+  const vote = (slug: string) => {
+    if (state?.votedFor) return;
+    setState(castVote(slug));
   };
 
   if (!state) {
@@ -63,8 +36,6 @@ export function Leaderboard({ candidates }: { candidates: Product[] }) {
           Danke für Ihre Stimme! Sie können pro Woche einmal abstimmen.
         </p>
       )}
-      {error && <p className="mb-8 text-sm text-red-700">{error}</p>}
-
       <div className="space-y-6">
         {sorted.map((candidate, i) => {
           const count = state.votes[candidate.slug] ?? 0;
@@ -112,18 +83,14 @@ export function Leaderboard({ candidates }: { candidates: Product[] }) {
 
               <button
                 onClick={() => vote(candidate.slug)}
-                disabled={Boolean(state.votedFor) || pending === candidate.slug}
+                disabled={Boolean(state.votedFor)}
                 className={`shrink-0 border px-4 py-2 text-xs tracking-[0.15em] uppercase transition disabled:cursor-not-allowed disabled:opacity-50 ${
                   isLeader
                     ? "border-bone/40 text-bone hover:border-bone"
                     : "border-ink text-ink hover:bg-ink hover:text-bone"
                 } ${hasVotedForThis ? "opacity-100" : ""}`}
               >
-                {hasVotedForThis
-                  ? "Ihre Stimme"
-                  : pending === candidate.slug
-                  ? "…"
-                  : "Abstimmen"}
+                {hasVotedForThis ? "Ihre Stimme" : "Abstimmen"}
               </button>
             </div>
           );

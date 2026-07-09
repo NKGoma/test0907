@@ -1,19 +1,12 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { ConfiguratorClient } from "@/components/Configurator/ConfiguratorClient";
-import { MODELS } from "@/lib/configurator";
 
 export const metadata: Metadata = {
   title: "Konfigurator — Wertstück",
 };
 
-export default async function KonfiguratorPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ modell?: string }>;
-}) {
-  const { modell } = await searchParams;
-  const initialModelId = MODELS.some((m) => m.id === modell) ? modell : undefined;
-
+export default function KonfiguratorPage() {
   return (
     <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
       <p className="text-xs tracking-[0.3em] text-tan-dark uppercase">Konfigurator</p>
@@ -25,7 +18,9 @@ export default async function KonfiguratorPage({
         Vorschau und der Preis aktualisieren sich live.
       </p>
       <div className="mt-16">
-        <ConfiguratorClient initialModelId={initialModelId} />
+        <Suspense fallback={null}>
+          <ConfiguratorClient />
+        </Suspense>
       </div>
     </div>
   );
